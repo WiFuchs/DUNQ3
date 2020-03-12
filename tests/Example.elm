@@ -6,7 +6,10 @@ import Test exposing (..)
 import Main exposing (..)
 
 topEnv : Env 
-topEnv = [(Binding "+" (PrimV "+"))]
+topEnv = [(Binding "+" (PrimV "+")),
+          (Binding "-" (PrimV "-")),
+          (Binding "*" (PrimV "*")),
+          (Binding "/" (PrimV "/"))]
 
 suite : Test
 suite =
@@ -22,4 +25,12 @@ suite =
     test "test IdC"
         (\_ -> Expect.equal (interp (IdC "t") (extendEnv (Binding "t" (StringV "test")) topEnv)) (StringV "test")),
     test "test LamC"
-        (\_ -> Expect.equal (interp (LamC (Lam ["x"] (StringC "test"))) topEnv) (CloV (Clo ["x"] (StringC "test") topEnv)))]
+        (\_ -> Expect.equal (interp (LamC (Lam ["x"] (StringC "test"))) topEnv) (CloV (Clo ["x"] (StringC "test") topEnv))),
+    test "test AppC with +"
+        (\_ -> Expect.equal (interp (AppC (App (IdC "+") [(NumC 5), (NumC 3)])) topEnv) (NumV 8)),
+    test "test AppC with -"
+        (\_ -> Expect.equal (interp (AppC (App (IdC "-") [(NumC 5), (NumC 3)])) topEnv) (NumV 2)),
+    test "test AppC with *"
+        (\_ -> Expect.equal (interp (AppC (App (IdC "*") [(NumC 5), (NumC 3)])) topEnv) (NumV 15)),
+    test "test AppC with /"
+        (\_ -> Expect.equal (interp (AppC (App (IdC "/") [(NumC 6), (NumC 3)])) topEnv) (NumV 2))]

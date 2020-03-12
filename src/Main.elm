@@ -17,16 +17,19 @@ main =
 
 -- Data definitions
 
-type alias Number = Int
+type alias Number = Float
 
 type alias Env = List Binding
 
-type alias Lam = { args: List String,
-                    body: ExprC}
+type alias Lam = {args: List String,
+                  body: ExprC}
 
-type alias Clo = { params: List String,
-                    body: ExprC,
-                    env: Env}
+type alias Clo = {params: List String,
+                  body: ExprC,
+                  env: Env}
+
+type alias App = {fun: ExprC,
+                  args: List ExprC}
 
 type Binding = Binding String Value
 
@@ -39,6 +42,7 @@ type ExprC = NumC Number
            | StringC String
            | IdC String
            | LamC Lam
+           | AppC App
 
 
 extendEnv : Binding -> Env -> Env
@@ -69,6 +73,31 @@ interp expr env =
     IdC id ->
       lookupEnv id env
 
+    AppC {fun, args} ->
+      let
+        interpedFun = interp fun env
+        -- lambda uses a "\" to start
+        -- interpedArgs = map (\arg -> (interp arg env)) args
+        interpedArgs = List.map (\arg -> (interp arg env)) args
+      in
+        case interpedFun of
+          PrimV op ->
+            case ((StringV op) :: interpedArgs) of
+              [ (StringV "+"), (NumV l), (NumV r) ] ->
+                NumV (l + r)
+              [ (StringV "-"), (NumV l), (NumV r) ] ->
+                NumV (l - r)
+              [ (StringV "/"), (NumV l), (NumV r) ] ->
+                NumV (l / r)
+              [ (StringV "*"), (NumV l), (NumV r) ] ->
+                NumV (l * r)
+              _ ->
+                StringV "unimplemented"
+
+          _ ->
+            StringV "Also unimplemented"
+
+
 -- deconstruct record with {record_field,record_field,...}
     LamC {args, body} ->
     -- create record with (record_name args ...)
@@ -86,13 +115,13 @@ interp expr env =
 
 
 -- ignore everything below this line, it is from the demo code
-type alias Model = Int
+type alias Model = Number
 
 init : Model
 init =
   0
 
-add1 : Int -> Int
+add1 : Number -> Number
 add1 num = 
     num + 1
 
@@ -111,6 +140,9 @@ update expr model =
 
     LamC _ ->
       model - 1
+    
+    _ ->
+      model - 1
 
 
 
@@ -121,6 +153,6 @@ view : Model -> Html ExprC
 view model =
   div []
     [ button [ onClick (NumC 5) ] [ text "numC" ]
-    , div [] [ text (String.fromInt model) ]
+    , div [] [ text (String.fromFloat model) ]
     , button [ onClick (StringC "string") ] [ text "stringC" ]
     ]
