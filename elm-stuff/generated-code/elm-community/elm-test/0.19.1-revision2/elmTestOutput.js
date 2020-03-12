@@ -6327,6 +6327,9 @@ var $author$project$Main$Binding = F2(
 	function (a, b) {
 		return {$: 'Binding', a: a, b: b};
 	});
+var $author$project$Main$BoolC = function (a) {
+	return {$: 'BoolC', a: a};
+};
 var $author$project$Main$Clo = F3(
 	function (params, body, env) {
 		return {body: body, env: env, params: params};
@@ -6336,6 +6339,13 @@ var $author$project$Main$CloV = function (a) {
 };
 var $author$project$Main$IdC = function (a) {
 	return {$: 'IdC', a: a};
+};
+var $author$project$Main$If = F3(
+	function (one, two, els) {
+		return {els: els, one: one, two: two};
+	});
+var $author$project$Main$IfC = function (a) {
+	return {$: 'IfC', a: a};
 };
 var $author$project$Main$Lam = F2(
 	function (args, body) {
@@ -6349,6 +6359,9 @@ var $author$project$Main$NumC = function (a) {
 };
 var $author$project$Main$NumV = function (a) {
 	return {$: 'NumV', a: a};
+};
+var $author$project$Main$PrimV = function (a) {
+	return {$: 'PrimV', a: a};
 };
 var $author$project$Main$StringC = function (a) {
 	return {$: 'StringC', a: a};
@@ -6404,6 +6417,9 @@ var $author$project$Main$extendEnv = F2(
 	function (binding, env) {
 		return A2($elm$core$List$cons, binding, env);
 	});
+var $author$project$Main$BoolV = function (a) {
+	return {$: 'BoolV', a: a};
+};
 var $author$project$Main$lookupEnv = F2(
 	function (id, env) {
 		lookupEnv:
@@ -6429,76 +6445,105 @@ var $author$project$Main$lookupEnv = F2(
 	});
 var $author$project$Main$interp = F2(
 	function (expr, env) {
-		switch (expr.$) {
-			case 'NumC':
-				var num = expr.a;
-				return $author$project$Main$NumV(num);
-			case 'StringC':
-				var str = expr.a;
-				return $author$project$Main$StringV(str);
-			case 'IdC':
-				var id = expr.a;
-				return A2($author$project$Main$lookupEnv, id, env);
-			case 'AppC':
-				var fun = expr.a.fun;
-				var args = expr.a.args;
-				var interpedFun = A2($author$project$Main$interp, fun, env);
-				var interpedArgs = A2(
-					$elm$core$List$map,
-					function (arg) {
-						return A2($author$project$Main$interp, arg, env);
-					},
-					args);
-				if (interpedFun.$ === 'PrimV') {
-					var op = interpedFun.a;
-					var _v2 = A2(
-						$elm$core$List$cons,
-						$author$project$Main$StringV(op),
-						interpedArgs);
-					_v2$4:
-					while (true) {
-						if ((((((_v2.b && (_v2.a.$ === 'StringV')) && _v2.b.b) && (_v2.b.a.$ === 'NumV')) && _v2.b.b.b) && (_v2.b.b.a.$ === 'NumV')) && (!_v2.b.b.b.b)) {
-							switch (_v2.a.a) {
-								case '+':
-									var _v3 = _v2.b;
-									var l = _v3.a.a;
-									var _v4 = _v3.b;
-									var r = _v4.a.a;
-									return $author$project$Main$NumV(l + r);
-								case '-':
-									var _v5 = _v2.b;
-									var l = _v5.a.a;
-									var _v6 = _v5.b;
-									var r = _v6.a.a;
-									return $author$project$Main$NumV(l - r);
-								case '/':
-									var _v7 = _v2.b;
-									var l = _v7.a.a;
-									var _v8 = _v7.b;
-									var r = _v8.a.a;
-									return $author$project$Main$NumV(l / r);
-								case '*':
-									var _v9 = _v2.b;
-									var l = _v9.a.a;
-									var _v10 = _v9.b;
-									var r = _v10.a.a;
-									return $author$project$Main$NumV(l * r);
-								default:
-									break _v2$4;
-							}
+		interp:
+		while (true) {
+			switch (expr.$) {
+				case 'NumC':
+					var num = expr.a;
+					return $author$project$Main$NumV(num);
+				case 'StringC':
+					var str = expr.a;
+					return $author$project$Main$StringV(str);
+				case 'IdC':
+					var id = expr.a;
+					return A2($author$project$Main$lookupEnv, id, env);
+				case 'BoolC':
+					var bool = expr.a;
+					return $author$project$Main$BoolV(bool);
+				case 'IfC':
+					var one = expr.a.one;
+					var two = expr.a.two;
+					var els = expr.a.els;
+					var checker = A2($author$project$Main$interp, one, env);
+					if (checker.$ === 'BoolV') {
+						var bool = checker.a;
+						if (bool) {
+							var $temp$expr = two,
+								$temp$env = env;
+							expr = $temp$expr;
+							env = $temp$env;
+							continue interp;
 						} else {
-							break _v2$4;
+							var $temp$expr = els,
+								$temp$env = env;
+							expr = $temp$expr;
+							env = $temp$env;
+							continue interp;
 						}
+					} else {
+						return $author$project$Main$StringV('error!');
 					}
-					return $author$project$Main$StringV('unimplemented');
-				} else {
-					return $author$project$Main$StringV('Also unimplemented');
-				}
-			default:
-				var args = expr.a.args;
-				var body = expr.a.body;
-				return $author$project$Main$CloV(
-					A3($author$project$Main$Clo, args, body, env));
+				case 'AppC':
+					var fun = expr.a.fun;
+					var args = expr.a.args;
+					var interpedFun = A2($author$project$Main$interp, fun, env);
+					var interpedArgs = A2(
+						$elm$core$List$map,
+						function (arg) {
+							return A2($author$project$Main$interp, arg, env);
+						},
+						args);
+					if (interpedFun.$ === 'PrimV') {
+						var op = interpedFun.a;
+						var _v3 = A2(
+							$elm$core$List$cons,
+							$author$project$Main$StringV(op),
+							interpedArgs);
+						_v3$4:
+						while (true) {
+							if ((((((_v3.b && (_v3.a.$ === 'StringV')) && _v3.b.b) && (_v3.b.a.$ === 'NumV')) && _v3.b.b.b) && (_v3.b.b.a.$ === 'NumV')) && (!_v3.b.b.b.b)) {
+								switch (_v3.a.a) {
+									case '+':
+										var _v4 = _v3.b;
+										var l = _v4.a.a;
+										var _v5 = _v4.b;
+										var r = _v5.a.a;
+										return $author$project$Main$NumV(l + r);
+									case '-':
+										var _v6 = _v3.b;
+										var l = _v6.a.a;
+										var _v7 = _v6.b;
+										var r = _v7.a.a;
+										return $author$project$Main$NumV(l - r);
+									case '/':
+										var _v8 = _v3.b;
+										var l = _v8.a.a;
+										var _v9 = _v8.b;
+										var r = _v9.a.a;
+										return $author$project$Main$NumV(l / r);
+									case '*':
+										var _v10 = _v3.b;
+										var l = _v10.a.a;
+										var _v11 = _v10.b;
+										var r = _v11.a.a;
+										return $author$project$Main$NumV(l * r);
+									default:
+										break _v3$4;
+								}
+							} else {
+								break _v3$4;
+							}
+						}
+						return $author$project$Main$StringV('unimplemented');
+					} else {
+						return $author$project$Main$StringV('Also unimplemented');
+					}
+				default:
+					var args = expr.a.args;
+					var body = expr.a.body;
+					return $author$project$Main$CloV(
+						A3($author$project$Main$Clo, args, body, env));
+			}
 		}
 	});
 var $elm_explorations$test$Test$Internal$blankDescriptionFailure = $elm_explorations$test$Test$Internal$failNow(
@@ -6520,9 +6565,6 @@ var $elm_explorations$test$Test$test = F2(
 						]);
 				}));
 	});
-var $author$project$Main$PrimV = function (a) {
-	return {$: 'PrimV', a: a};
-};
 var $author$project$Example$topEnv = _List_fromArray(
 	[
 		A2(
@@ -6706,13 +6748,43 @@ var $author$project$Example$suite = A2(
 									]))),
 						$author$project$Example$topEnv),
 					$author$project$Main$NumV(2));
+			}),
+			A2(
+			$elm_explorations$test$Test$test,
+			'If Test with error msg',
+			function (_v10) {
+				return A2(
+					$elm_explorations$test$Expect$equal,
+					A2(
+						$author$project$Main$interp,
+						$author$project$Main$IfC(
+							A3(
+								$author$project$Main$If,
+								$author$project$Main$BoolC(true),
+								$author$project$Main$IdC('a'),
+								$author$project$Main$IdC('b'))),
+						$author$project$Example$topEnv),
+					$author$project$Main$StringV('Unbound identifier: a'));
+			}),
+			A2(
+			$elm_explorations$test$Test$test,
+			'If Test without error msg',
+			function (_v11) {
+				return A2(
+					$elm_explorations$test$Expect$equal,
+					A2(
+						$author$project$Main$interp,
+						$author$project$Main$IfC(
+							A3(
+								$author$project$Main$If,
+								$author$project$Main$BoolC(true),
+								$author$project$Main$IdC('+'),
+								$author$project$Main$IdC('-'))),
+						$author$project$Example$topEnv),
+					$author$project$Main$PrimV('+'));
 			})
 		]));
-<<<<<<< HEAD
-var $author$project$Test$Generated$Main193766369$main = A2(
-=======
-var $author$project$Test$Generated$Main3510687631$main = A2(
->>>>>>> master
+var $author$project$Test$Generated$Main2667166196$main = A2(
 	$author$project$Test$Runner$Node$run,
 	{
 		paths: _List_fromArray(
@@ -6720,11 +6792,7 @@ var $author$project$Test$Generated$Main3510687631$main = A2(
 		processes: 8,
 		report: $author$project$Test$Reporter$Reporter$ConsoleReport($author$project$Console$Text$UseColor),
 		runs: $elm$core$Maybe$Nothing,
-<<<<<<< HEAD
-		seed: 219236302387593
-=======
-		seed: 13052518390436
->>>>>>> master
+		seed: 63359690508443
 	},
 	$elm_explorations$test$Test$concat(
 		_List_fromArray(
@@ -6735,17 +6803,10 @@ var $author$project$Test$Generated$Main3510687631$main = A2(
 				_List_fromArray(
 					[$author$project$Example$suite]))
 			])));
-<<<<<<< HEAD
-_Platform_export({'Test':{'Generated':{'Main193766369':{'init':$author$project$Test$Generated$Main193766369$main($elm$json$Json$Decode$int)(0)}}}});}(this));
+_Platform_export({'Test':{'Generated':{'Main2667166196':{'init':$author$project$Test$Generated$Main2667166196$main($elm$json$Json$Decode$int)(0)}}}});}(this));
 return this.Elm;
 })({});
-var pipeFilename = "/tmp/elm_test-3259.sock";
-=======
-_Platform_export({'Test':{'Generated':{'Main3510687631':{'init':$author$project$Test$Generated$Main3510687631$main($elm$json$Json$Decode$int)(0)}}}});}(this));
-return this.Elm;
-})({});
-var pipeFilename = "/tmp/elm_test-79589.sock";
->>>>>>> master
+var pipeFilename = "/tmp/elm_test-4945.sock";
 // Make sure necessary things are defined.
 if (typeof Elm === "undefined") {
   throw "test runner config error: Elm is not defined. Make sure you provide a file compiled by Elm!";

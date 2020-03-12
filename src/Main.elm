@@ -70,6 +70,7 @@ type ExprC
     | LamC Lam
     | IfC If
     | AppC App
+    | BoolC Bool
 
 
 extendEnv : Binding -> Env -> Env
@@ -106,6 +107,9 @@ interp expr env =
 
         IdC id ->
             lookupEnv id env
+
+        BoolC bool -> 
+            BoolV bool
 
         IfC { one, two, els } ->
             let
@@ -166,6 +170,7 @@ interp expr env =
         LamC { args, body } ->
             -- create record with (record_name args ...)
             CloV (Clo args body env)
+
 
 
 
