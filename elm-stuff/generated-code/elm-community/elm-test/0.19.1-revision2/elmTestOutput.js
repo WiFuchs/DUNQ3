@@ -6316,6 +6316,13 @@ var $author$project$Test$Runner$Node$run = F2(
 				update: $author$project$Test$Runner$Node$update
 			});
 	});
+var $author$project$Main$App = F2(
+	function (fun, args) {
+		return {args: args, fun: fun};
+	});
+var $author$project$Main$AppC = function (a) {
+	return {$: 'AppC', a: a};
+};
 var $author$project$Main$Binding = F2(
 	function (a, b) {
 		return {$: 'Binding', a: a, b: b};
@@ -6432,6 +6439,61 @@ var $author$project$Main$interp = F2(
 			case 'IdC':
 				var id = expr.a;
 				return A2($author$project$Main$lookupEnv, id, env);
+			case 'AppC':
+				var fun = expr.a.fun;
+				var args = expr.a.args;
+				var interpedFun = A2($author$project$Main$interp, fun, env);
+				var interpedArgs = A2(
+					$elm$core$List$map,
+					function (arg) {
+						return A2($author$project$Main$interp, arg, env);
+					},
+					args);
+				if (interpedFun.$ === 'PrimV') {
+					var op = interpedFun.a;
+					var _v2 = A2(
+						$elm$core$List$cons,
+						$author$project$Main$StringV(op),
+						interpedArgs);
+					_v2$4:
+					while (true) {
+						if ((((((_v2.b && (_v2.a.$ === 'StringV')) && _v2.b.b) && (_v2.b.a.$ === 'NumV')) && _v2.b.b.b) && (_v2.b.b.a.$ === 'NumV')) && (!_v2.b.b.b.b)) {
+							switch (_v2.a.a) {
+								case '+':
+									var _v3 = _v2.b;
+									var l = _v3.a.a;
+									var _v4 = _v3.b;
+									var r = _v4.a.a;
+									return $author$project$Main$NumV(l + r);
+								case '-':
+									var _v5 = _v2.b;
+									var l = _v5.a.a;
+									var _v6 = _v5.b;
+									var r = _v6.a.a;
+									return $author$project$Main$NumV(l - r);
+								case '/':
+									var _v7 = _v2.b;
+									var l = _v7.a.a;
+									var _v8 = _v7.b;
+									var r = _v8.a.a;
+									return $author$project$Main$NumV(l / r);
+								case '*':
+									var _v9 = _v2.b;
+									var l = _v9.a.a;
+									var _v10 = _v9.b;
+									var r = _v10.a.a;
+									return $author$project$Main$NumV(l * r);
+								default:
+									break _v2$4;
+							}
+						} else {
+							break _v2$4;
+						}
+					}
+					return $author$project$Main$StringV('unimplemented');
+				} else {
+					return $author$project$Main$StringV('Also unimplemented');
+				}
 			default:
 				var args = expr.a.args;
 				var body = expr.a.body;
@@ -6466,7 +6528,19 @@ var $author$project$Example$topEnv = _List_fromArray(
 		A2(
 		$author$project$Main$Binding,
 		'+',
-		$author$project$Main$PrimV('+'))
+		$author$project$Main$PrimV('+')),
+		A2(
+		$author$project$Main$Binding,
+		'-',
+		$author$project$Main$PrimV('-')),
+		A2(
+		$author$project$Main$Binding,
+		'*',
+		$author$project$Main$PrimV('*')),
+		A2(
+		$author$project$Main$Binding,
+		'/',
+		$author$project$Main$PrimV('/'))
 	]);
 var $author$project$Example$suite = A2(
 	$elm_explorations$test$Test$describe,
@@ -6552,9 +6626,93 @@ var $author$project$Example$suite = A2(
 								['x']),
 							$author$project$Main$StringC('test'),
 							$author$project$Example$topEnv)));
+			}),
+			A2(
+			$elm_explorations$test$Test$test,
+			'test AppC with +',
+			function (_v6) {
+				return A2(
+					$elm_explorations$test$Expect$equal,
+					A2(
+						$author$project$Main$interp,
+						$author$project$Main$AppC(
+							A2(
+								$author$project$Main$App,
+								$author$project$Main$IdC('+'),
+								_List_fromArray(
+									[
+										$author$project$Main$NumC(5),
+										$author$project$Main$NumC(3)
+									]))),
+						$author$project$Example$topEnv),
+					$author$project$Main$NumV(8));
+			}),
+			A2(
+			$elm_explorations$test$Test$test,
+			'test AppC with -',
+			function (_v7) {
+				return A2(
+					$elm_explorations$test$Expect$equal,
+					A2(
+						$author$project$Main$interp,
+						$author$project$Main$AppC(
+							A2(
+								$author$project$Main$App,
+								$author$project$Main$IdC('-'),
+								_List_fromArray(
+									[
+										$author$project$Main$NumC(5),
+										$author$project$Main$NumC(3)
+									]))),
+						$author$project$Example$topEnv),
+					$author$project$Main$NumV(2));
+			}),
+			A2(
+			$elm_explorations$test$Test$test,
+			'test AppC with *',
+			function (_v8) {
+				return A2(
+					$elm_explorations$test$Expect$equal,
+					A2(
+						$author$project$Main$interp,
+						$author$project$Main$AppC(
+							A2(
+								$author$project$Main$App,
+								$author$project$Main$IdC('*'),
+								_List_fromArray(
+									[
+										$author$project$Main$NumC(5),
+										$author$project$Main$NumC(3)
+									]))),
+						$author$project$Example$topEnv),
+					$author$project$Main$NumV(15));
+			}),
+			A2(
+			$elm_explorations$test$Test$test,
+			'test AppC with /',
+			function (_v9) {
+				return A2(
+					$elm_explorations$test$Expect$equal,
+					A2(
+						$author$project$Main$interp,
+						$author$project$Main$AppC(
+							A2(
+								$author$project$Main$App,
+								$author$project$Main$IdC('/'),
+								_List_fromArray(
+									[
+										$author$project$Main$NumC(6),
+										$author$project$Main$NumC(3)
+									]))),
+						$author$project$Example$topEnv),
+					$author$project$Main$NumV(2));
 			})
 		]));
+<<<<<<< HEAD
 var $author$project$Test$Generated$Main193766369$main = A2(
+=======
+var $author$project$Test$Generated$Main3510687631$main = A2(
+>>>>>>> master
 	$author$project$Test$Runner$Node$run,
 	{
 		paths: _List_fromArray(
@@ -6562,7 +6720,11 @@ var $author$project$Test$Generated$Main193766369$main = A2(
 		processes: 8,
 		report: $author$project$Test$Reporter$Reporter$ConsoleReport($author$project$Console$Text$UseColor),
 		runs: $elm$core$Maybe$Nothing,
+<<<<<<< HEAD
 		seed: 219236302387593
+=======
+		seed: 13052518390436
+>>>>>>> master
 	},
 	$elm_explorations$test$Test$concat(
 		_List_fromArray(
@@ -6573,10 +6735,17 @@ var $author$project$Test$Generated$Main193766369$main = A2(
 				_List_fromArray(
 					[$author$project$Example$suite]))
 			])));
+<<<<<<< HEAD
 _Platform_export({'Test':{'Generated':{'Main193766369':{'init':$author$project$Test$Generated$Main193766369$main($elm$json$Json$Decode$int)(0)}}}});}(this));
 return this.Elm;
 })({});
 var pipeFilename = "/tmp/elm_test-3259.sock";
+=======
+_Platform_export({'Test':{'Generated':{'Main3510687631':{'init':$author$project$Test$Generated$Main3510687631$main($elm$json$Json$Decode$int)(0)}}}});}(this));
+return this.Elm;
+})({});
+var pipeFilename = "/tmp/elm_test-79589.sock";
+>>>>>>> master
 // Make sure necessary things are defined.
 if (typeof Elm === "undefined") {
   throw "test runner config error: Elm is not defined. Make sure you provide a file compiled by Elm!";
