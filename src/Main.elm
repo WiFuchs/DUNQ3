@@ -15,7 +15,7 @@ main =
 
 
 
--- MODEL
+-- Data definitions
 
 type alias Number = Int
 
@@ -23,22 +23,24 @@ type alias Model = Int
 
 type alias Env = List Binding
 
+type alias Lam = { args: List String,
+                    body: ExprC}
+
+type alias Clo = { params: List String,
+                    body: ExprC,
+                    env: Env}
+
 type Binding = Binding String Value
 
 type Value = NumV Number
            | StringV String
            | PrimV String
+           | CloV Clo
 
 type ExprC = NumC Number
            | StringC String
            | IdC String
-           | LamC { args: List String,
-                    body: ExprC}
-
--- type alias NumC = Number
--- type alias StringC = String
--- type alias IdC = String
--- type alias LamC = { args : List String}
+           | LamC Lam
 
 
 init : Model
@@ -70,7 +72,7 @@ interp expr env =
   case expr of
     NumC num ->
       NumV num
-    
+
     StringC str ->
       StringV str
 

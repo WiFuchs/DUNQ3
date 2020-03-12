@@ -20,4 +20,6 @@ suite =
     test "test StringV"
         (\_ -> Expect.equal (interp (StringC "test") topEnv) (StringV "test")),
     test "test IdC"
-        (\_ -> Expect.equal (interp (IdC "t") (extendEnv (Binding "t" (StringV "test")) topEnv)) (StringV "test"))]
+        (\_ -> Expect.equal (interp (IdC "t") (extendEnv (Binding "t" (StringV "test")) topEnv)) (StringV "test")),
+    test "test LamC"
+        (\_ -> Expect.equal (interp (LamC (Lam ["x"] (StringC "test"))) topEnv) (CloV (Clo ["x"] (StringC "test") topEnv)))]

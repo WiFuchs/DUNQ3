@@ -6320,8 +6320,22 @@ var $author$project$Main$Binding = F2(
 	function (a, b) {
 		return {$: 'Binding', a: a, b: b};
 	});
+var $author$project$Main$Clo = F3(
+	function (params, body, env) {
+		return {body: body, env: env, params: params};
+	});
+var $author$project$Main$CloV = function (a) {
+	return {$: 'CloV', a: a};
+};
 var $author$project$Main$IdC = function (a) {
 	return {$: 'IdC', a: a};
+};
+var $author$project$Main$Lam = F2(
+	function (args, body) {
+		return {args: args, body: body};
+	});
+var $author$project$Main$LamC = function (a) {
+	return {$: 'LamC', a: a};
 };
 var $author$project$Main$NumC = function (a) {
 	return {$: 'NumC', a: a};
@@ -6512,9 +6526,32 @@ var $author$project$Example$suite = A2(
 								$author$project$Main$StringV('test')),
 							$author$project$Example$topEnv)),
 					$author$project$Main$StringV('test'));
+			}),
+			A2(
+			$elm_explorations$test$Test$test,
+			'test LamC',
+			function (_v5) {
+				return A2(
+					$elm_explorations$test$Expect$equal,
+					A2(
+						$author$project$Main$interp,
+						$author$project$Main$LamC(
+							A2(
+								$author$project$Main$Lam,
+								_List_fromArray(
+									['x']),
+								$author$project$Main$StringC('test'))),
+						$author$project$Example$topEnv),
+					$author$project$Main$CloV(
+						A3(
+							$author$project$Main$Clo,
+							_List_fromArray(
+								['x']),
+							$author$project$Main$StringC('test'),
+							$author$project$Example$topEnv)));
 			})
 		]));
-var $author$project$Test$Generated$Main3255427749$main = A2(
+var $author$project$Test$Generated$Main2337271022$main = A2(
 	$author$project$Test$Runner$Node$run,
 	{
 		paths: _List_fromArray(
@@ -6522,7 +6559,7 @@ var $author$project$Test$Generated$Main3255427749$main = A2(
 		processes: 16,
 		report: $author$project$Test$Reporter$Reporter$ConsoleReport($author$project$Console$Text$UseColor),
 		runs: $elm$core$Maybe$Nothing,
-		seed: 406310986911221
+		seed: 207347710559286
 	},
 	$elm_explorations$test$Test$concat(
 		_List_fromArray(
@@ -6533,10 +6570,10 @@ var $author$project$Test$Generated$Main3255427749$main = A2(
 				_List_fromArray(
 					[$author$project$Example$suite]))
 			])));
-_Platform_export({'Test':{'Generated':{'Main3255427749':{'init':$author$project$Test$Generated$Main3255427749$main($elm$json$Json$Decode$int)(0)}}}});}(this));
+_Platform_export({'Test':{'Generated':{'Main2337271022':{'init':$author$project$Test$Generated$Main2337271022$main($elm$json$Json$Decode$int)(0)}}}});}(this));
 return this.Elm;
 })({});
-var pipeFilename = "/tmp/elm_test-75256.sock";
+var pipeFilename = "/tmp/elm_test-77206.sock";
 // Make sure necessary things are defined.
 if (typeof Elm === "undefined") {
   throw "test runner config error: Elm is not defined. Make sure you provide a file compiled by Elm!";
