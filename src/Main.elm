@@ -20,10 +20,8 @@ main =
 type alias Number =
     Float
 
-
-type alias Env =
-    List Binding
-
+type alias Env = 
+  List Binding
 
 type alias Lam =
     { args : List String
@@ -34,7 +32,7 @@ type alias Lam =
 type alias Clo =
     { params : List String
     , body : ExprC
-    , env : Env
+    , cenv : Env
     }
 
 
@@ -53,7 +51,6 @@ type alias If =
 
 type Binding
     = Binding String Value
-
 
 type Value
     = NumV Number
@@ -162,9 +159,13 @@ interp expr env =
 
                         _ ->
                             StringV "unimplemented"
-
-                _ ->
-                    StringV "Also unimplemented"
+                CloV {params, body, cenv} ->
+                  let bindings = List.map2 (\p v -> (Binding p v)) params interpedArgs
+                      newEnv = List.append bindings cenv
+                  in
+                    interp body newEnv
+                _ -> 
+                  StringV "Also unimplemented"
 
         -- deconstruct record with {record_field,record_field,...}
         LamC { args, body } ->

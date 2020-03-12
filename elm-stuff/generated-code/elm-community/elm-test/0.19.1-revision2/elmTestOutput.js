@@ -6331,8 +6331,8 @@ var $author$project$Main$BoolC = function (a) {
 	return {$: 'BoolC', a: a};
 };
 var $author$project$Main$Clo = F3(
-	function (params, body, env) {
-		return {body: body, env: env, params: params};
+	function (params, body, cenv) {
+		return {body: body, cenv: cenv, params: params};
 	});
 var $author$project$Main$CloV = function (a) {
 	return {$: 'CloV', a: a};
@@ -6493,50 +6493,69 @@ var $author$project$Main$interp = F2(
 							return A2($author$project$Main$interp, arg, env);
 						},
 						args);
-					if (interpedFun.$ === 'PrimV') {
-						var op = interpedFun.a;
-						var _v3 = A2(
-							$elm$core$List$cons,
-							$author$project$Main$StringV(op),
-							interpedArgs);
-						_v3$4:
-						while (true) {
-							if ((((((_v3.b && (_v3.a.$ === 'StringV')) && _v3.b.b) && (_v3.b.a.$ === 'NumV')) && _v3.b.b.b) && (_v3.b.b.a.$ === 'NumV')) && (!_v3.b.b.b.b)) {
-								switch (_v3.a.a) {
-									case '+':
-										var _v4 = _v3.b;
-										var l = _v4.a.a;
-										var _v5 = _v4.b;
-										var r = _v5.a.a;
-										return $author$project$Main$NumV(l + r);
-									case '-':
-										var _v6 = _v3.b;
-										var l = _v6.a.a;
-										var _v7 = _v6.b;
-										var r = _v7.a.a;
-										return $author$project$Main$NumV(l - r);
-									case '/':
-										var _v8 = _v3.b;
-										var l = _v8.a.a;
-										var _v9 = _v8.b;
-										var r = _v9.a.a;
-										return $author$project$Main$NumV(l / r);
-									case '*':
-										var _v10 = _v3.b;
-										var l = _v10.a.a;
-										var _v11 = _v10.b;
-										var r = _v11.a.a;
-										return $author$project$Main$NumV(l * r);
-									default:
-										break _v3$4;
+					switch (interpedFun.$) {
+						case 'PrimV':
+							var op = interpedFun.a;
+							var _v3 = A2(
+								$elm$core$List$cons,
+								$author$project$Main$StringV(op),
+								interpedArgs);
+							_v3$4:
+							while (true) {
+								if ((((((_v3.b && (_v3.a.$ === 'StringV')) && _v3.b.b) && (_v3.b.a.$ === 'NumV')) && _v3.b.b.b) && (_v3.b.b.a.$ === 'NumV')) && (!_v3.b.b.b.b)) {
+									switch (_v3.a.a) {
+										case '+':
+											var _v4 = _v3.b;
+											var l = _v4.a.a;
+											var _v5 = _v4.b;
+											var r = _v5.a.a;
+											return $author$project$Main$NumV(l + r);
+										case '-':
+											var _v6 = _v3.b;
+											var l = _v6.a.a;
+											var _v7 = _v6.b;
+											var r = _v7.a.a;
+											return $author$project$Main$NumV(l - r);
+										case '/':
+											var _v8 = _v3.b;
+											var l = _v8.a.a;
+											var _v9 = _v8.b;
+											var r = _v9.a.a;
+											return $author$project$Main$NumV(l / r);
+										case '*':
+											var _v10 = _v3.b;
+											var l = _v10.a.a;
+											var _v11 = _v10.b;
+											var r = _v11.a.a;
+											return $author$project$Main$NumV(l * r);
+										default:
+											break _v3$4;
+									}
+								} else {
+									break _v3$4;
 								}
-							} else {
-								break _v3$4;
 							}
-						}
-						return $author$project$Main$StringV('unimplemented');
-					} else {
-						return $author$project$Main$StringV('Also unimplemented');
+							return $author$project$Main$StringV('unimplemented');
+						case 'CloV':
+							var params = interpedFun.a.params;
+							var body = interpedFun.a.body;
+							var cenv = interpedFun.a.cenv;
+							var bindings = A3(
+								$elm$core$List$map2,
+								F2(
+									function (p, v) {
+										return A2($author$project$Main$Binding, p, v);
+									}),
+								params,
+								interpedArgs);
+							var newEnv = A2($elm$core$List$append, bindings, cenv);
+							var $temp$expr = body,
+								$temp$env = newEnv;
+							expr = $temp$expr;
+							env = $temp$env;
+							continue interp;
+						default:
+							return $author$project$Main$StringV('Also unimplemented');
 					}
 				default:
 					var args = expr.a.args;
@@ -6782,9 +6801,66 @@ var $author$project$Example$suite = A2(
 								$author$project$Main$IdC('-'))),
 						$author$project$Example$topEnv),
 					$author$project$Main$PrimV('+'));
+			}),
+			A2(
+			$elm_explorations$test$Test$test,
+			'test AppC with LamC',
+			function (_v12) {
+				return A2(
+					$elm_explorations$test$Expect$equal,
+					A2(
+						$author$project$Main$interp,
+						$author$project$Main$AppC(
+							A2(
+								$author$project$Main$App,
+								$author$project$Main$LamC(
+									A2(
+										$author$project$Main$Lam,
+										_List_fromArray(
+											['x']),
+										$author$project$Main$StringC('test'))),
+								_List_fromArray(
+									[
+										$author$project$Main$NumC(6)
+									]))),
+						$author$project$Example$topEnv),
+					$author$project$Main$StringV('test'));
+			}),
+			A2(
+			$elm_explorations$test$Test$test,
+			'test AppC with LamC 2',
+			function (_v13) {
+				return A2(
+					$elm_explorations$test$Expect$equal,
+					A2(
+						$author$project$Main$interp,
+						$author$project$Main$AppC(
+							A2(
+								$author$project$Main$App,
+								$author$project$Main$LamC(
+									A2(
+										$author$project$Main$Lam,
+										_List_fromArray(
+											['x', 'y']),
+										$author$project$Main$AppC(
+											A2(
+												$author$project$Main$App,
+												$author$project$Main$IdC('+'),
+												_List_fromArray(
+													[
+														$author$project$Main$IdC('x'),
+														$author$project$Main$IdC('y')
+													]))))),
+								_List_fromArray(
+									[
+										$author$project$Main$NumC(6),
+										$author$project$Main$NumC(5)
+									]))),
+						$author$project$Example$topEnv),
+					$author$project$Main$NumV(11));
 			})
 		]));
-var $author$project$Test$Generated$Main2667166196$main = A2(
+var $author$project$Test$Generated$Main1982895520$main = A2(
 	$author$project$Test$Runner$Node$run,
 	{
 		paths: _List_fromArray(
@@ -6792,7 +6868,7 @@ var $author$project$Test$Generated$Main2667166196$main = A2(
 		processes: 8,
 		report: $author$project$Test$Reporter$Reporter$ConsoleReport($author$project$Console$Text$UseColor),
 		runs: $elm$core$Maybe$Nothing,
-		seed: 63359690508443
+		seed: 93205975278785
 	},
 	$elm_explorations$test$Test$concat(
 		_List_fromArray(
@@ -6803,10 +6879,10 @@ var $author$project$Test$Generated$Main2667166196$main = A2(
 				_List_fromArray(
 					[$author$project$Example$suite]))
 			])));
-_Platform_export({'Test':{'Generated':{'Main2667166196':{'init':$author$project$Test$Generated$Main2667166196$main($elm$json$Json$Decode$int)(0)}}}});}(this));
+_Platform_export({'Test':{'Generated':{'Main1982895520':{'init':$author$project$Test$Generated$Main1982895520$main($elm$json$Json$Decode$int)(0)}}}});}(this));
 return this.Elm;
 })({});
-var pipeFilename = "/tmp/elm_test-4945.sock";
+var pipeFilename = "/tmp/elm_test-5313.sock";
 // Make sure necessary things are defined.
 if (typeof Elm === "undefined") {
   throw "test runner config error: Elm is not defined. Make sure you provide a file compiled by Elm!";
