@@ -28,6 +28,10 @@ type alias Clo = { params: List String,
                     body: ExprC,
                     env: Env}
 
+type alias IfC = { if: ExprC,
+                    then: ExprC,
+                    else: ExprC}
+
 type Binding = Binding String Value
 
 type Value = NumV Number
@@ -39,6 +43,7 @@ type ExprC = NumC Number
            | StringC String
            | IdC String
            | LamC Lam
+           | IfC IfC
 
 
 extendEnv : Binding -> Env -> Env
@@ -68,6 +73,18 @@ interp expr env =
 
     IdC id ->
       lookupEnv id env
+    
+    IfC one two els ->
+      
+
+{--[(IfC if then else) (define checker (interp if env))
+                        (cond
+                          [(boolV? checker)
+                           (cond
+                             [(equal? #true (boolV-bool checker))
+                              (interp then env)]
+                             [else (interp else env)])]
+                          [else (error 'DUNQ "error in interp, condition was not a boolean")])] --}
 
 -- deconstruct record with {record_field,record_field,...}
     LamC {args, body} ->

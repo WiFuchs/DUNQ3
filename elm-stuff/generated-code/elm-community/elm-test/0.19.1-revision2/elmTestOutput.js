@@ -6554,15 +6554,15 @@ var $author$project$Example$suite = A2(
 							$author$project$Example$topEnv)));
 			})
 		]));
-var $author$project$Test$Generated$Main2757819034$main = A2(
+var $author$project$Test$Generated$Main193766369$main = A2(
 	$author$project$Test$Runner$Node$run,
 	{
 		paths: _List_fromArray(
-			['/Users/archie/Documents/csc430/test/DUNQ3/tests/Example.elm']),
+			['/Users/archie/Documents/csc430/asgn7/DUNQ3/tests/Example.elm']),
 		processes: 8,
 		report: $author$project$Test$Reporter$Reporter$ConsoleReport($author$project$Console$Text$UseColor),
 		runs: $elm$core$Maybe$Nothing,
-		seed: 37172782618058
+		seed: 219236302387593
 	},
 	$elm_explorations$test$Test$concat(
 		_List_fromArray(
@@ -6573,10 +6573,10 @@ var $author$project$Test$Generated$Main2757819034$main = A2(
 				_List_fromArray(
 					[$author$project$Example$suite]))
 			])));
-_Platform_export({'Test':{'Generated':{'Main2757819034':{'init':$author$project$Test$Generated$Main2757819034$main($elm$json$Json$Decode$int)(0)}}}});}(this));
+_Platform_export({'Test':{'Generated':{'Main193766369':{'init':$author$project$Test$Generated$Main193766369$main($elm$json$Json$Decode$int)(0)}}}});}(this));
 return this.Elm;
 })({});
-var pipeFilename = "/tmp/elm_test-3013.sock";
+var pipeFilename = "/tmp/elm_test-3259.sock";
 // Make sure necessary things are defined.
 if (typeof Elm === "undefined") {
   throw "test runner config error: Elm is not defined. Make sure you provide a file compiled by Elm!";
