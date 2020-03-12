@@ -6433,7 +6433,10 @@ var $author$project$Main$interp = F2(
 				var id = expr.a;
 				return A2($author$project$Main$lookupEnv, id, env);
 			default:
-				return $author$project$Main$StringV('Invalid expr');
+				var args = expr.a.args;
+				var body = expr.a.body;
+				return $author$project$Main$CloV(
+					A3($author$project$Main$Clo, args, body, env));
 		}
 	});
 var $elm_explorations$test$Test$Internal$blankDescriptionFailure = $elm_explorations$test$Test$Internal$failNow(
@@ -6551,7 +6554,7 @@ var $author$project$Example$suite = A2(
 							$author$project$Example$topEnv)));
 			})
 		]));
-var $author$project$Test$Generated$Main2337271022$main = A2(
+var $author$project$Test$Generated$Main3400928551$main = A2(
 	$author$project$Test$Runner$Node$run,
 	{
 		paths: _List_fromArray(
@@ -6559,7 +6562,7 @@ var $author$project$Test$Generated$Main2337271022$main = A2(
 		processes: 16,
 		report: $author$project$Test$Reporter$Reporter$ConsoleReport($author$project$Console$Text$UseColor),
 		runs: $elm$core$Maybe$Nothing,
-		seed: 207347710559286
+		seed: 238820336546794
 	},
 	$elm_explorations$test$Test$concat(
 		_List_fromArray(
@@ -6570,10 +6573,10 @@ var $author$project$Test$Generated$Main2337271022$main = A2(
 				_List_fromArray(
 					[$author$project$Example$suite]))
 			])));
-_Platform_export({'Test':{'Generated':{'Main2337271022':{'init':$author$project$Test$Generated$Main2337271022$main($elm$json$Json$Decode$int)(0)}}}});}(this));
+_Platform_export({'Test':{'Generated':{'Main3400928551':{'init':$author$project$Test$Generated$Main3400928551$main($elm$json$Json$Decode$int)(0)}}}});}(this));
 return this.Elm;
 })({});
-var pipeFilename = "/tmp/elm_test-77206.sock";
+var pipeFilename = "/tmp/elm_test-77809.sock";
 // Make sure necessary things are defined.
 if (typeof Elm === "undefined") {
   throw "test runner config error: Elm is not defined. Make sure you provide a file compiled by Elm!";

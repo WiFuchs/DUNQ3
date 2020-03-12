@@ -79,8 +79,8 @@ interp expr env =
     IdC id ->
       lookupEnv id env
 
-    _ ->
-      StringV "Invalid expr"
+    LamC {args, body} ->
+      CloV (Clo args body env)
 
 
 update : ExprC -> Model -> Model
