@@ -6328,8 +6328,8 @@ var $author$project$Main$Binding = F2(
 		return {$: 'Binding', a: a, b: b};
 	});
 var $author$project$Main$Clo = F3(
-	function (params, body, env) {
-		return {body: body, env: env, params: params};
+	function (params, body, cenv) {
+		return {body: body, cenv: cenv, params: params};
 	});
 var $author$project$Main$CloV = function (a) {
 	return {$: 'CloV', a: a};
@@ -6429,76 +6429,98 @@ var $author$project$Main$lookupEnv = F2(
 	});
 var $author$project$Main$interp = F2(
 	function (expr, env) {
-		switch (expr.$) {
-			case 'NumC':
-				var num = expr.a;
-				return $author$project$Main$NumV(num);
-			case 'StringC':
-				var str = expr.a;
-				return $author$project$Main$StringV(str);
-			case 'IdC':
-				var id = expr.a;
-				return A2($author$project$Main$lookupEnv, id, env);
-			case 'AppC':
-				var fun = expr.a.fun;
-				var args = expr.a.args;
-				var interpedFun = A2($author$project$Main$interp, fun, env);
-				var interpedArgs = A2(
-					$elm$core$List$map,
-					function (arg) {
-						return A2($author$project$Main$interp, arg, env);
-					},
-					args);
-				if (interpedFun.$ === 'PrimV') {
-					var op = interpedFun.a;
-					var _v2 = A2(
-						$elm$core$List$cons,
-						$author$project$Main$StringV(op),
-						interpedArgs);
-					_v2$4:
-					while (true) {
-						if ((((((_v2.b && (_v2.a.$ === 'StringV')) && _v2.b.b) && (_v2.b.a.$ === 'NumV')) && _v2.b.b.b) && (_v2.b.b.a.$ === 'NumV')) && (!_v2.b.b.b.b)) {
-							switch (_v2.a.a) {
-								case '+':
-									var _v3 = _v2.b;
-									var l = _v3.a.a;
-									var _v4 = _v3.b;
-									var r = _v4.a.a;
-									return $author$project$Main$NumV(l + r);
-								case '-':
-									var _v5 = _v2.b;
-									var l = _v5.a.a;
-									var _v6 = _v5.b;
-									var r = _v6.a.a;
-									return $author$project$Main$NumV(l - r);
-								case '/':
-									var _v7 = _v2.b;
-									var l = _v7.a.a;
-									var _v8 = _v7.b;
-									var r = _v8.a.a;
-									return $author$project$Main$NumV(l / r);
-								case '*':
-									var _v9 = _v2.b;
-									var l = _v9.a.a;
-									var _v10 = _v9.b;
-									var r = _v10.a.a;
-									return $author$project$Main$NumV(l * r);
-								default:
+		interp:
+		while (true) {
+			switch (expr.$) {
+				case 'NumC':
+					var num = expr.a;
+					return $author$project$Main$NumV(num);
+				case 'StringC':
+					var str = expr.a;
+					return $author$project$Main$StringV(str);
+				case 'IdC':
+					var id = expr.a;
+					return A2($author$project$Main$lookupEnv, id, env);
+				case 'AppC':
+					var fun = expr.a.fun;
+					var args = expr.a.args;
+					var interpedFun = A2($author$project$Main$interp, fun, env);
+					var interpedArgs = A2(
+						$elm$core$List$map,
+						function (arg) {
+							return A2($author$project$Main$interp, arg, env);
+						},
+						args);
+					switch (interpedFun.$) {
+						case 'PrimV':
+							var op = interpedFun.a;
+							var _v2 = A2(
+								$elm$core$List$cons,
+								$author$project$Main$StringV(op),
+								interpedArgs);
+							_v2$4:
+							while (true) {
+								if ((((((_v2.b && (_v2.a.$ === 'StringV')) && _v2.b.b) && (_v2.b.a.$ === 'NumV')) && _v2.b.b.b) && (_v2.b.b.a.$ === 'NumV')) && (!_v2.b.b.b.b)) {
+									switch (_v2.a.a) {
+										case '+':
+											var _v3 = _v2.b;
+											var l = _v3.a.a;
+											var _v4 = _v3.b;
+											var r = _v4.a.a;
+											return $author$project$Main$NumV(l + r);
+										case '-':
+											var _v5 = _v2.b;
+											var l = _v5.a.a;
+											var _v6 = _v5.b;
+											var r = _v6.a.a;
+											return $author$project$Main$NumV(l - r);
+										case '/':
+											var _v7 = _v2.b;
+											var l = _v7.a.a;
+											var _v8 = _v7.b;
+											var r = _v8.a.a;
+											return $author$project$Main$NumV(l / r);
+										case '*':
+											var _v9 = _v2.b;
+											var l = _v9.a.a;
+											var _v10 = _v9.b;
+											var r = _v10.a.a;
+											return $author$project$Main$NumV(l * r);
+										default:
+											break _v2$4;
+									}
+								} else {
 									break _v2$4;
+								}
 							}
-						} else {
-							break _v2$4;
-						}
+							return $author$project$Main$StringV('unimplemented');
+						case 'CloV':
+							var params = interpedFun.a.params;
+							var body = interpedFun.a.body;
+							var cenv = interpedFun.a.cenv;
+							var bindings = A3(
+								$elm$core$List$map2,
+								F2(
+									function (p, v) {
+										return A2($author$project$Main$Binding, p, v);
+									}),
+								params,
+								interpedArgs);
+							var newEnv = A2($elm$core$List$append, bindings, cenv);
+							var $temp$expr = body,
+								$temp$env = newEnv;
+							expr = $temp$expr;
+							env = $temp$env;
+							continue interp;
+						default:
+							return $author$project$Main$StringV('Also unimplemented');
 					}
-					return $author$project$Main$StringV('unimplemented');
-				} else {
-					return $author$project$Main$StringV('Also unimplemented');
-				}
-			default:
-				var args = expr.a.args;
-				var body = expr.a.body;
-				return $author$project$Main$CloV(
-					A3($author$project$Main$Clo, args, body, env));
+				default:
+					var args = expr.a.args;
+					var body = expr.a.body;
+					return $author$project$Main$CloV(
+						A3($author$project$Main$Clo, args, body, env));
+			}
 		}
 	});
 var $elm_explorations$test$Test$Internal$blankDescriptionFailure = $elm_explorations$test$Test$Internal$failNow(
@@ -6706,9 +6728,66 @@ var $author$project$Example$suite = A2(
 									]))),
 						$author$project$Example$topEnv),
 					$author$project$Main$NumV(2));
+			}),
+			A2(
+			$elm_explorations$test$Test$test,
+			'test AppC with LamC',
+			function (_v10) {
+				return A2(
+					$elm_explorations$test$Expect$equal,
+					A2(
+						$author$project$Main$interp,
+						$author$project$Main$AppC(
+							A2(
+								$author$project$Main$App,
+								$author$project$Main$LamC(
+									A2(
+										$author$project$Main$Lam,
+										_List_fromArray(
+											['x']),
+										$author$project$Main$StringC('test'))),
+								_List_fromArray(
+									[
+										$author$project$Main$NumC(6)
+									]))),
+						$author$project$Example$topEnv),
+					$author$project$Main$StringV('test'));
+			}),
+			A2(
+			$elm_explorations$test$Test$test,
+			'test AppC with LamC 2',
+			function (_v11) {
+				return A2(
+					$elm_explorations$test$Expect$equal,
+					A2(
+						$author$project$Main$interp,
+						$author$project$Main$AppC(
+							A2(
+								$author$project$Main$App,
+								$author$project$Main$LamC(
+									A2(
+										$author$project$Main$Lam,
+										_List_fromArray(
+											['x', 'y']),
+										$author$project$Main$AppC(
+											A2(
+												$author$project$Main$App,
+												$author$project$Main$IdC('+'),
+												_List_fromArray(
+													[
+														$author$project$Main$IdC('x'),
+														$author$project$Main$IdC('y')
+													]))))),
+								_List_fromArray(
+									[
+										$author$project$Main$NumC(6),
+										$author$project$Main$NumC(5)
+									]))),
+						$author$project$Example$topEnv),
+					$author$project$Main$NumV(11));
 			})
 		]));
-var $author$project$Test$Generated$Main3510687631$main = A2(
+var $author$project$Test$Generated$Main167487710$main = A2(
 	$author$project$Test$Runner$Node$run,
 	{
 		paths: _List_fromArray(
@@ -6716,7 +6795,7 @@ var $author$project$Test$Generated$Main3510687631$main = A2(
 		processes: 16,
 		report: $author$project$Test$Reporter$Reporter$ConsoleReport($author$project$Console$Text$UseColor),
 		runs: $elm$core$Maybe$Nothing,
-		seed: 13052518390436
+		seed: 26850325547541
 	},
 	$elm_explorations$test$Test$concat(
 		_List_fromArray(
@@ -6727,10 +6806,10 @@ var $author$project$Test$Generated$Main3510687631$main = A2(
 				_List_fromArray(
 					[$author$project$Example$suite]))
 			])));
-_Platform_export({'Test':{'Generated':{'Main3510687631':{'init':$author$project$Test$Generated$Main3510687631$main($elm$json$Json$Decode$int)(0)}}}});}(this));
+_Platform_export({'Test':{'Generated':{'Main167487710':{'init':$author$project$Test$Generated$Main167487710$main($elm$json$Json$Decode$int)(0)}}}});}(this));
 return this.Elm;
 })({});
-var pipeFilename = "/tmp/elm_test-79589.sock";
+var pipeFilename = "/tmp/elm_test-79857.sock";
 // Make sure necessary things are defined.
 if (typeof Elm === "undefined") {
   throw "test runner config error: Elm is not defined. Make sure you provide a file compiled by Elm!";

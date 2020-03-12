@@ -33,4 +33,8 @@ suite =
     test "test AppC with *"
         (\_ -> Expect.equal (interp (AppC (App (IdC "*") [(NumC 5), (NumC 3)])) topEnv) (NumV 15)),
     test "test AppC with /"
-        (\_ -> Expect.equal (interp (AppC (App (IdC "/") [(NumC 6), (NumC 3)])) topEnv) (NumV 2))]
+        (\_ -> Expect.equal (interp (AppC (App (IdC "/") [(NumC 6), (NumC 3)])) topEnv) (NumV 2)),
+    test "test AppC with LamC"
+        (\_ -> Expect.equal (interp (AppC (App (LamC (Lam ["x"] (StringC "test"))) [(NumC 6)])) topEnv) (StringV "test")),
+    test "test AppC with LamC 2"
+        (\_ -> Expect.equal (interp (AppC (App (LamC (Lam ["x", "y"] (AppC (App (IdC "+") [(IdC "x"), (IdC "y")])))) [(NumC 6), (NumC 5)])) topEnv) (NumV 11))]

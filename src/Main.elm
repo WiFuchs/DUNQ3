@@ -26,7 +26,7 @@ type alias Lam = {args: List String,
 
 type alias Clo = {params: List String,
                   body: ExprC,
-                  env: Env}
+                  cenv: Env}
 
 type alias App = {fun: ExprC,
                   args: List ExprC}
@@ -93,6 +93,13 @@ interp expr env =
                 NumV (l * r)
               _ ->
                 StringV "unimplemented"
+          
+          CloV {params, body, cenv} ->
+            let
+              bindings = List.map2 (\p v -> (Binding p v)) params interpedArgs
+              newEnv = List.append bindings cenv
+            in
+              interp body newEnv
 
           _ ->
             StringV "Also unimplemented"
