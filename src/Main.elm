@@ -19,8 +19,6 @@ main =
 
 type alias Number = Int
 
-type alias Model = Int
-
 type alias Env = List Binding
 
 type alias Lam = { args: List String,
@@ -43,14 +41,6 @@ type ExprC = NumC Number
            | LamC Lam
 
 
-init : Model
-init =
-  0
-
-add1 : Int -> Int
-add1 num = 
-    num + 1
-
 extendEnv : Binding -> Env -> Env
 extendEnv binding env =
   binding :: env
@@ -66,7 +56,7 @@ lookupEnv id env =
     _ ->
       (StringV ("Unbound identifier: " ++ id))
 
-
+--  type annotation goes above function
 interp : ExprC -> Env -> Value
 interp expr env =
   case expr of
@@ -79,8 +69,32 @@ interp expr env =
     IdC id ->
       lookupEnv id env
 
+-- deconstruct record with {record_field,record_field,...}
     LamC {args, body} ->
+    -- create record with (record_name args ...)
       CloV (Clo args body env)
+
+
+
+
+
+
+
+
+
+
+
+
+-- ignore everything below this line, it is from the demo code
+type alias Model = Int
+
+init : Model
+init =
+  0
+
+add1 : Int -> Int
+add1 num = 
+    num + 1
 
 
 update : ExprC -> Model -> Model
