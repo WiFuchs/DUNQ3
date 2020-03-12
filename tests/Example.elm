@@ -46,3 +46,4 @@ suite =
         , test "test AppC with LamC 2"
             (\_ -> Expect.equal (interp (AppC (App (LamC (Lam [ "x", "y" ] (AppC (App (IdC "+") [ IdC "x", IdC "y" ])))) [ NumC 6, NumC 5 ])) topEnv) (NumV 11))
         ]
+ 
