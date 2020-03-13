@@ -6327,6 +6327,9 @@ var $author$project$Main$Binding = F2(
 	function (a, b) {
 		return {$: 'Binding', a: a, b: b};
 	});
+var $author$project$Main$BoolC = function (a) {
+	return {$: 'BoolC', a: a};
+};
 var $author$project$Main$Clo = F3(
 	function (params, body, cenv) {
 		return {body: body, cenv: cenv, params: params};
@@ -6336,6 +6339,13 @@ var $author$project$Main$CloV = function (a) {
 };
 var $author$project$Main$IdC = function (a) {
 	return {$: 'IdC', a: a};
+};
+var $author$project$Main$If = F3(
+	function (one, two, els) {
+		return {els: els, one: one, two: two};
+	});
+var $author$project$Main$IfC = function (a) {
+	return {$: 'IfC', a: a};
 };
 var $author$project$Main$Lam = F2(
 	function (args, body) {
@@ -6349,6 +6359,9 @@ var $author$project$Main$NumC = function (a) {
 };
 var $author$project$Main$NumV = function (a) {
 	return {$: 'NumV', a: a};
+};
+var $author$project$Main$PrimV = function (a) {
+	return {$: 'PrimV', a: a};
 };
 var $author$project$Main$StringC = function (a) {
 	return {$: 'StringC', a: a};
@@ -6404,6 +6417,9 @@ var $author$project$Main$extendEnv = F2(
 	function (binding, env) {
 		return A2($elm$core$List$cons, binding, env);
 	});
+var $author$project$Main$BoolV = function (a) {
+	return {$: 'BoolV', a: a};
+};
 var $author$project$Main$lookupEnv = F2(
 	function (id, env) {
 		lookupEnv:
@@ -6441,6 +6457,32 @@ var $author$project$Main$interp = F2(
 				case 'IdC':
 					var id = expr.a;
 					return A2($author$project$Main$lookupEnv, id, env);
+				case 'BoolC':
+					var bool = expr.a;
+					return $author$project$Main$BoolV(bool);
+				case 'IfC':
+					var one = expr.a.one;
+					var two = expr.a.two;
+					var els = expr.a.els;
+					var checker = A2($author$project$Main$interp, one, env);
+					if (checker.$ === 'BoolV') {
+						var bool = checker.a;
+						if (bool) {
+							var $temp$expr = two,
+								$temp$env = env;
+							expr = $temp$expr;
+							env = $temp$env;
+							continue interp;
+						} else {
+							var $temp$expr = els,
+								$temp$env = env;
+							expr = $temp$expr;
+							env = $temp$env;
+							continue interp;
+						}
+					} else {
+						return $author$project$Main$StringV('error!');
+					}
 				case 'AppC':
 					var fun = expr.a.fun;
 					var args = expr.a.args;
@@ -6454,43 +6496,43 @@ var $author$project$Main$interp = F2(
 					switch (interpedFun.$) {
 						case 'PrimV':
 							var op = interpedFun.a;
-							var _v2 = A2(
+							var _v3 = A2(
 								$elm$core$List$cons,
 								$author$project$Main$StringV(op),
 								interpedArgs);
-							_v2$4:
+							_v3$4:
 							while (true) {
-								if ((((((_v2.b && (_v2.a.$ === 'StringV')) && _v2.b.b) && (_v2.b.a.$ === 'NumV')) && _v2.b.b.b) && (_v2.b.b.a.$ === 'NumV')) && (!_v2.b.b.b.b)) {
-									switch (_v2.a.a) {
+								if ((((((_v3.b && (_v3.a.$ === 'StringV')) && _v3.b.b) && (_v3.b.a.$ === 'NumV')) && _v3.b.b.b) && (_v3.b.b.a.$ === 'NumV')) && (!_v3.b.b.b.b)) {
+									switch (_v3.a.a) {
 										case '+':
-											var _v3 = _v2.b;
-											var l = _v3.a.a;
 											var _v4 = _v3.b;
-											var r = _v4.a.a;
+											var l = _v4.a.a;
+											var _v5 = _v4.b;
+											var r = _v5.a.a;
 											return $author$project$Main$NumV(l + r);
 										case '-':
-											var _v5 = _v2.b;
-											var l = _v5.a.a;
-											var _v6 = _v5.b;
-											var r = _v6.a.a;
+											var _v6 = _v3.b;
+											var l = _v6.a.a;
+											var _v7 = _v6.b;
+											var r = _v7.a.a;
 											return $author$project$Main$NumV(l - r);
 										case '/':
-											var _v7 = _v2.b;
-											var l = _v7.a.a;
-											var _v8 = _v7.b;
-											var r = _v8.a.a;
+											var _v8 = _v3.b;
+											var l = _v8.a.a;
+											var _v9 = _v8.b;
+											var r = _v9.a.a;
 											return $author$project$Main$NumV(l / r);
 										case '*':
-											var _v9 = _v2.b;
-											var l = _v9.a.a;
-											var _v10 = _v9.b;
-											var r = _v10.a.a;
+											var _v10 = _v3.b;
+											var l = _v10.a.a;
+											var _v11 = _v10.b;
+											var r = _v11.a.a;
 											return $author$project$Main$NumV(l * r);
 										default:
-											break _v2$4;
+											break _v3$4;
 									}
 								} else {
-									break _v2$4;
+									break _v3$4;
 								}
 							}
 							return $author$project$Main$StringV('unimplemented');
@@ -6542,9 +6584,6 @@ var $elm_explorations$test$Test$test = F2(
 						]);
 				}));
 	});
-var $author$project$Main$PrimV = function (a) {
-	return {$: 'PrimV', a: a};
-};
 var $author$project$Example$topEnv = _List_fromArray(
 	[
 		A2(
@@ -6731,8 +6770,42 @@ var $author$project$Example$suite = A2(
 			}),
 			A2(
 			$elm_explorations$test$Test$test,
-			'test AppC with LamC',
+			'If Test with error msg',
 			function (_v10) {
+				return A2(
+					$elm_explorations$test$Expect$equal,
+					A2(
+						$author$project$Main$interp,
+						$author$project$Main$IfC(
+							A3(
+								$author$project$Main$If,
+								$author$project$Main$BoolC(true),
+								$author$project$Main$IdC('a'),
+								$author$project$Main$IdC('b'))),
+						$author$project$Example$topEnv),
+					$author$project$Main$StringV('Unbound identifier: a'));
+			}),
+			A2(
+			$elm_explorations$test$Test$test,
+			'If Test without error msg',
+			function (_v11) {
+				return A2(
+					$elm_explorations$test$Expect$equal,
+					A2(
+						$author$project$Main$interp,
+						$author$project$Main$IfC(
+							A3(
+								$author$project$Main$If,
+								$author$project$Main$BoolC(true),
+								$author$project$Main$IdC('+'),
+								$author$project$Main$IdC('-'))),
+						$author$project$Example$topEnv),
+					$author$project$Main$PrimV('+'));
+			}),
+			A2(
+			$elm_explorations$test$Test$test,
+			'test AppC with LamC',
+			function (_v12) {
 				return A2(
 					$elm_explorations$test$Expect$equal,
 					A2(
@@ -6756,7 +6829,7 @@ var $author$project$Example$suite = A2(
 			A2(
 			$elm_explorations$test$Test$test,
 			'test AppC with LamC 2',
-			function (_v11) {
+			function (_v13) {
 				return A2(
 					$elm_explorations$test$Expect$equal,
 					A2(
@@ -6787,15 +6860,15 @@ var $author$project$Example$suite = A2(
 					$author$project$Main$NumV(11));
 			})
 		]));
-var $author$project$Test$Generated$Main167487710$main = A2(
+var $author$project$Test$Generated$Main682344510$main = A2(
 	$author$project$Test$Runner$Node$run,
 	{
 		paths: _List_fromArray(
-			['/Users/willfuchs/Documents/Cal Poly 2019/csc430/assignments/as07/tests/Example.elm']),
-		processes: 16,
+			['/Users/archie/Documents/csc430/asgn7/DUNQ3/tests/Example.elm']),
+		processes: 8,
 		report: $author$project$Test$Reporter$Reporter$ConsoleReport($author$project$Console$Text$UseColor),
 		runs: $elm$core$Maybe$Nothing,
-		seed: 26850325547541
+		seed: 344363418367229
 	},
 	$elm_explorations$test$Test$concat(
 		_List_fromArray(
@@ -6806,10 +6879,10 @@ var $author$project$Test$Generated$Main167487710$main = A2(
 				_List_fromArray(
 					[$author$project$Example$suite]))
 			])));
-_Platform_export({'Test':{'Generated':{'Main167487710':{'init':$author$project$Test$Generated$Main167487710$main($elm$json$Json$Decode$int)(0)}}}});}(this));
+_Platform_export({'Test':{'Generated':{'Main682344510':{'init':$author$project$Test$Generated$Main682344510$main($elm$json$Json$Decode$int)(0)}}}});}(this));
 return this.Elm;
 })({});
-var pipeFilename = "/tmp/elm_test-79857.sock";
+var pipeFilename = "/tmp/elm_test-5414.sock";
 // Make sure necessary things are defined.
 if (typeof Elm === "undefined") {
   throw "test runner config error: Elm is not defined. Make sure you provide a file compiled by Elm!";
